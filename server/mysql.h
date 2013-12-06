@@ -1,16 +1,13 @@
-/*
- ******************************************
- * module name: Mysql interface header file
- * author: PuMaoyang
- * e-mail: pumaoyang1988@163.com
- * create date: 2013-09-18
- * modify date: 
- * modify log: 
- * ***************************************
- */
-
-
-
+/* *
+ * * *************************************
+ * * module name: Mysql interface header file
+ * * author: PuMaoyang
+ * * e-mail: pumaoyang1988@163.com
+ * * create date: 2013-09-18
+ * * modify date: 
+ * * modify log: 
+ * * *************************************
+ * */
 
 #ifndef _MYSQL_H_2013_09_17
 #define _MYSQL_H_2013_09_17
