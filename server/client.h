@@ -4,16 +4,23 @@
 class CClient
 {
 	public:
-		char m_pRecvData[DEFAULT_RECV_DATA_LEN];
-		int m_iDataLen;
+		u_char m_pRecvData[DEFAULT_RECV_DATA_LEN];
+		u_int m_iDataLen;
 		
 	public:
-		char* GetData();
-		int GetDataSize();
+		u_char* GetData();
+		u_int GetDataSize();
 
 	public:
 		CClient();
 		~CClient();
+
+	private:
+		int m_sockfd;
+		time_t m_tCreateTime;
+		short hdPort;
+
+
 };
 
 

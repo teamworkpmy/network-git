@@ -4,7 +4,6 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include "mysql.h"
 #include "log.h"
 #include "client.h"
 
@@ -15,7 +14,7 @@ class CEpoll
 		~CEpoll();
 		int Init();
 		int Loop();
-		void OnReadData(CClient *pClient);
+		virtual int OnReadData(CClient *pClient);
 
 	private: 
 		int CreateSocket(const char *szIP, const short hdPort);

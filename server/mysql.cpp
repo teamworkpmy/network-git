@@ -13,6 +13,11 @@ CMySQL_Lite::~CMySQL_Lite()
 		m_pQueryBuf = NULL;
 	}
 
+	if (m_pData) {
+		delete[] m_pData;
+		m_pData = NULL;
+	}
+
 	mysql_close(m_pConn);
 }
 

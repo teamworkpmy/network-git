@@ -15,10 +15,6 @@
 
 #include "types.h"
 
-#define u_char unsigned char
-#define u_int unsigned int
-#define u_short unsigned short
-
 typedef struct tagLogData
 {
 	tagLogData() {

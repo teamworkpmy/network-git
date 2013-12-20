@@ -22,5 +22,21 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <pthread.h>
+
+#define u_char unsigned char
+#define u_int unsigned int
+#define u_short unsigned short
+
+#pragma pack(1)
+
+typedef struct tagData
+{
+	int iSize;
+	char pData[0];
+}tagData;
+const short g_hdDataSize = sizeof(tagData);
+
+#pragma pack()
 
 #endif

@@ -10,12 +10,12 @@ CClient::~CClient()
 
 }
 
-char* CClient::GetData()
+u_char* CClient::GetData()
 {
 	return m_pRecvData;
 }
 
-int CClient::GetDataSize()
+u_int CClient::GetDataSize()
 {
 	return m_iDataLen;
 }

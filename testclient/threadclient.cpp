@@ -17,15 +17,75 @@ typedef struct thr_info {
 	int sockfd;
 }thr_info;
 
+typedef struct tagData 
+{
+	int iSize;
+	char pData[0];
+}tagData;
+const short g_hdDataSize = sizeof(tagData);
+
+typedef struct tagHEADER
+{
+	tagHEADER();
+	unsigned int    lSize;
+	int         lFlag;
+	unsigned short  uCmd;
+	unsigned int            lVersion;
+	unsigned short  uSeq;
+	int lResult;
+	int   id;    //用户ID
+	int  id2;
+	int lReserve[4];//
+	static  unsigned short GetSeq();
+	void    HTONL();
+	void    NTOHL();
+}tagHEADER;       
+static const u_short g_hdHeaderSize = sizeof(tagHEADER);
+
+typedef struct tagFileBaseReq : public tagHEADER
+{
+	tagFileBaseReq()
+		:uFileSeq(0) 
+		 ,uCurPos(0) 
+	{ 
+		lSize = sizeof(tagFileBaseReq);
+	} 
+
+	int   uFileSeq;               //文件序号 
+	int   cbFileTotalSize;        //文件长度 
+	int   cbBlockSize;            //文件块长度 
+	int   uCurPos;                //在整个文件中的位置 
+}tagFileBaseReq; 
+static const u_short g_hdFileBaseReqSize = sizeof(tagFileBaseReq);
+
+typedef struct tagScreenshotUpload : public tagFileBaseReq
+{
+	int         userID;          
+	int         id2;
+	unsigned char   pData[0]; 
+}tagScreenshotUpload;
+static const u_short g_hdScreenshotUploadSize = sizeof(tagScreenshotUpload); 
+
+
+
 int i = 0;
+unsigned int tTime = time(NULL);
 
 void *thr_fn(void *arg) {
 	printf("%d pid: %d tid: %lu num: %d\n", *(int *)arg, getpid(), pthread_self(), ((thr_info *)arg)->thr_num);
 	int ret = 0;
-	unsigned char buf[4096] = {0};
-	memcpy(buf, "哈哈哈", strlen("哈哈哈"));
+	unsigned char buf[10241] = {0};
 
-	ret = send(((thr_info *)arg)->sockfd, buf, strlen("哈哈哈"), 0);
+	tagData *p = (tagData *)buf;
+	int n = (rand_r(&tTime) % 10) * 10 + (rand_r(&tTime) % 10);
+
+	for (int j = 0; j < n; j++) {
+		strcat((char *)p->pData, "哈");
+	}
+
+	p->iSize = g_hdDataSize + n * strlen("哈");
+
+	ret = send(((thr_info *)arg)->sockfd, buf, p->iSize, 0);
 	if (-1 == ret)
 	{
 		printf("send error:%s", strerror(errno));
@@ -34,7 +94,9 @@ void *thr_fn(void *arg) {
 	else
 	{
 		i++;
-		printf("%d: send %d\n", i, ret);
+		char *pBuf[1024] = {0};
+		memcpy(pBuf, p->pData, p->iSize - g_hdDataSize);
+		printf("%d: send %d, %s\n", i, ret, pBuf);
 	}
 	return NULL;
 }

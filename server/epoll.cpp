@@ -55,7 +55,7 @@ int CEpoll::SetLinger(int sockfd)
 	so_linger.l_onoff = 1;
 	so_linger.l_linger = 0; 
 
-	return setsockopt(sockfd, SOL_SOCKET, SO_LINGER, &so_linger, sizeof(so_linger));
+	return setsockopt( sockfd, SOL_SOCKET, SO_LINGER, &so_linger, sizeof(so_linger));
 }
 
 int CEpoll::SetReuseaddr(int sockfd)
@@ -67,7 +67,8 @@ int CEpoll::SetReuseaddr(int sockfd)
 int CEpoll::BindAndListen()
 {
 	if (m_sockfd < 0) {
-		DOLOG("[ERROR]%s(%d), socket: %d error", __FUNCTION__, __LINE__, m_sockfd);
+		DOLOG("[ERROR]%s(%d), socket: %d error", __FUNCTION__, __LINE__, 
+				m_sockfd);
 		return -1;
 	}
 
@@ -82,7 +83,8 @@ int CEpoll::BindAndListen()
 int CEpoll::Accept()
 {
 	if (m_sockfd < 0) {
-		DOLOG("[ERROR]%s(%d), socket: %d error", __FUNCTION__, __LINE__, m_sockfd);
+		DOLOG("[ERROR]%s(%d), socket: %d error", __FUNCTION__, __LINE__, 
+				m_sockfd);
 		return -1;
 	}
 
@@ -134,8 +136,10 @@ int CEpoll::EpollDel(struct epoll_event *event)
 	return 0;
 }
 
-void CEpoll::OnReadData(CClient *pClient)
+int CEpoll::OnReadData(CClient *pClient)
 {
+	DOLOG("[INFO]%s(%d): len: %d", __FUNCTION__, __LINE__, pClient->GetDataSize());
+	return 0;
 }
 
 
@@ -145,7 +149,8 @@ int CEpoll::Init()
 	time_t tTimeNow = time(NULL);
 	struct tm *timeinfo = localtime(&tTimeNow);
 	char tmp[256] = {0};
-	snprintf(tmp, 256, "./log/pmy_%04d_%02d_%02d.log", timeinfo->tm_year + 1900, timeinfo->tm_mon + 1, timeinfo->tm_mday);
+	snprintf(tmp, 256, "./log/pmy_%04d_%02d_%02d.log", 
+			timeinfo->tm_year + 1900, timeinfo->tm_mon + 1, timeinfo->tm_mday);
 
 	g_Log.LogInit(tmp);
 
@@ -160,7 +165,8 @@ int CEpoll::Init()
 
 	ret = SetNonBlocking(listen_sock);
 	if (ret < 0) {
-		DOLOG("[ERROR]%s(%d), set non-blocking socket failed, error: %s", __FUNCTION__, __LINE__, strerror(errno));
+		DOLOG("[ERROR]%s(%d), set non-blocking socket failed, error: %s", 
+				__FUNCTION__, __LINE__, strerror(errno));
 		return -1;
 	}
 
@@ -253,19 +259,18 @@ int CEpoll::Loop()
 			}
 			else {
 				if (events[n].events == EPOLLIN) {
-					DOLOG("[INFO]%s(%d): EPOLLIN: %d, fd: %d ", __FUNCTION__, __LINE__, EPOLLIN, events[n].data.fd);
+					//DOLOG("[INFO]%s(%d): EPOLLIN: %d, fd: %d ", __FUNCTION__, __LINE__, EPOLLIN, events[n].data.fd);
 
-					//memset(buf, 0, 4096);
 					memset(m_pClient->m_pRecvData, 0, 10240);
 
-					//ret = recv(events[n].data.fd, buf, 4096, 0);
-					ret = recv(events[n].data.fd, m_pClient->m_pRecvData, 10240, 0);
+					ret = recv(events[n].data.fd, m_pClient->m_pRecvData, 
+							10240, 0);
 					if (ret == -1) {
 						DOLOG("error:%s,%d", strerror(errno), __LINE__);
 						continue;
 					}
 					else if (ret == 0) {
-						DOLOG("[INFO]%s(%d): EPOLL_CTL_DEL: %d, fd: %d", __FUNCTION__, __LINE__, EPOLL_CTL_DEL, events[n].data.fd);
+					//	DOLOG("[INFO]%s(%d): EPOLL_CTL_DEL: %d, fd: %d", __FUNCTION__, __LINE__, EPOLL_CTL_DEL, events[n].data.fd);
 						EpollDel(&events[n]);
 						continue;
 					}
@@ -273,9 +278,8 @@ int CEpoll::Loop()
 					m_pClient->m_iDataLen = ret;
 					OnReadData(m_pClient);
 
-
 					size += ret;
-					DOLOG("%d: info %d ret: %d, total: %d", n, events[n].data.fd, ret, size);
+			//		DOLOG("%d: info %d ret: %d, total: %d", n, events[n].data.fd, ret, size);
 				}
 				else {
 					DOLOG("NO EVENT");
