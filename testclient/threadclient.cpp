@@ -24,50 +24,6 @@ typedef struct tagData
 }tagData;
 const short g_hdDataSize = sizeof(tagData);
 
-typedef struct tagHEADER
-{
-	tagHEADER();
-	unsigned int    lSize;
-	int         lFlag;
-	unsigned short  uCmd;
-	unsigned int            lVersion;
-	unsigned short  uSeq;
-	int lResult;
-	int   id;    //用户ID
-	int  id2;
-	int lReserve[4];//
-	static  unsigned short GetSeq();
-	void    HTONL();
-	void    NTOHL();
-}tagHEADER;       
-static const u_short g_hdHeaderSize = sizeof(tagHEADER);
-
-typedef struct tagFileBaseReq : public tagHEADER
-{
-	tagFileBaseReq()
-		:uFileSeq(0) 
-		 ,uCurPos(0) 
-	{ 
-		lSize = sizeof(tagFileBaseReq);
-	} 
-
-	int   uFileSeq;               //文件序号 
-	int   cbFileTotalSize;        //文件长度 
-	int   cbBlockSize;            //文件块长度 
-	int   uCurPos;                //在整个文件中的位置 
-}tagFileBaseReq; 
-static const u_short g_hdFileBaseReqSize = sizeof(tagFileBaseReq);
-
-typedef struct tagScreenshotUpload : public tagFileBaseReq
-{
-	int         userID;          
-	int         id2;
-	unsigned char   pData[0]; 
-}tagScreenshotUpload;
-static const u_short g_hdScreenshotUploadSize = sizeof(tagScreenshotUpload); 
-
-
-
 int i = 0;
 unsigned int tTime = time(NULL);
 
