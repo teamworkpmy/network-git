@@ -45,7 +45,7 @@ class CMyLog
 
 	private:
 		char *m_buf;
-		int m_buflen;
+		int m_pBufLen;
 
 		char *m_timebuf;
 		int m_timelen;
@@ -59,4 +59,4 @@ class CMyLog
 #endif
 
 extern CMyLog g_Log;
-#define DOLOG g_Log.LogAppend
+#define LOG g_Log.LogAppend

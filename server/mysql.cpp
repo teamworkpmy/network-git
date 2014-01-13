@@ -26,16 +26,16 @@ int CMySQL_Lite::InitMySQL()
 	MYSQL *conn_ptr = mysql_init(NULL);
 
 	if (!conn_ptr) {
-		DOLOG("error: %s, line: %d\n", strerror(errno), __LINE__);
+		LOG("error: %s, line: %d\n", strerror(errno), __LINE__);
 	}
 
 	conn_ptr = mysql_real_connect(conn_ptr, 
 			"192.168.1.111", "pmy", "test", "", 3306, NULL, 0);
 	if (conn_ptr) {
-		DOLOG("connecting\n");
+		LOG("connecting\n");
 	}
 	else {
-		DOLOG("error: %s, line: %d\n", strerror(errno), __LINE__);
+		LOG("error: %s, line: %d\n", strerror(errno), __LINE__);
 	}
 
 	m_pConn = conn_ptr;
@@ -44,7 +44,7 @@ int CMySQL_Lite::InitMySQL()
 
 	m_pQueryBuf = (char *)new char[m_uQueryLen + 1];
 	if (!m_pQueryBuf) {
-		DOLOG("error: %s, line: %d\n", strerror(errno), __LINE__);
+		LOG("error: %s, line: %d\n", strerror(errno), __LINE__);
 		return -1;
 	}
 
@@ -52,7 +52,7 @@ int CMySQL_Lite::InitMySQL()
 
 	m_pData = (char *)new char[m_uDataLen + 1];
 	if (!m_pData) {
-		DOLOG("error: %s, line: %d\n", strerror(errno), __LINE__);
+		LOG("error: %s, line: %d\n", strerror(errno), __LINE__);
 		return -1;
 	}
 
@@ -69,7 +69,7 @@ int CMySQL_Lite::UpdateSQL(const char *pQuery, ...)
 
 	ret = mysql_query(this->m_pConn, m_pQueryBuf);
 	if (ret != 0) {
-		DOLOG("error: %s, line: %d\n", 
+		LOG("error: %s, line: %d\n", 
 				mysql_error(this->m_pConn), __LINE__);
 		return -1;
 	}
@@ -87,7 +87,7 @@ int CMySQL_Lite::QuerySQLPure(const char *pQuery, ...)
 
 	ret = mysql_query(this->m_pConn, m_pQueryBuf);
 	if (ret != 0) {
-		DOLOG("error: %s, line: %d\n", 
+		LOG("error: %s, line: %d\n", 
 				mysql_error(this->m_pConn), __LINE__);
 		return -1;
 	}
@@ -95,7 +95,7 @@ int CMySQL_Lite::QuerySQLPure(const char *pQuery, ...)
 	do {
 		this->m_pRes = mysql_use_result(this->m_pConn);
 		if (!this->m_pRes) {
-			DOLOG("error: %s, line: %d\n", 
+			LOG("error: %s, line: %d\n", 
 					mysql_error(this->m_pConn), __LINE__);
 			return -1;
 		}
@@ -133,14 +133,14 @@ int CMySQL_Lite::QuerySQLPure(const char *pQuery, ...)
 					struct tm tm_s;
 					char *res = strptime(row[i], "%Y-%m-%d %H:%M:%S", &tm_s);
 					if (!res) {
-						DOLOG("error: %s, line: %d\n", 
+						LOG("error: %s, line: %d\n", 
 								mysql_error(this->m_pConn), __LINE__);
 						break;
 					}
 
 					ret = mktime(&tm_s);
 					if (ret == -1) {
-						DOLOG("error: %s, line: %d\n", 
+						LOG("error: %s, line: %d\n", 
 								mysql_error(this->m_pConn), __LINE__);
 						break;
 					}
@@ -172,21 +172,21 @@ int CMySQL_Lite::QueryCount(const char *pQuery, ...)
 
 	ret = mysql_query(this->m_pConn, m_pQueryBuf);
 	if (ret != 0) {
-		DOLOG("error: %s, line: %d\n", 
+		LOG("error: %s, line: %d\n", 
 				mysql_error(this->m_pConn), __LINE__);
 		return -1;
 	}
 
 	this->m_pRes = mysql_use_result(this->m_pConn);
 	if (!this->m_pRes) {
-		DOLOG("error: %s, line: %d\n", 
+		LOG("error: %s, line: %d\n", 
 				mysql_error(this->m_pConn), __LINE__);
 		return -1;
 	}
 
 	uint32_t num_fields = mysql_num_fields(this->m_pRes);
 	if (num_fields != 1) {
-		DOLOG("error: %s, line: %d\n", 
+		LOG("error: %s, line: %d\n", 
 				mysql_error(this->m_pConn), __LINE__);
 		return -1;
 	}
@@ -203,7 +203,7 @@ int CMySQL_Lite::QueryCount(const char *pQuery, ...)
 		hdNum = atoi(*row);
 	}
 	else {
-		DOLOG("error: %s, line: %d\n", 
+		LOG("error: %s, line: %d\n", 
 				mysql_error(this->m_pConn), __LINE__);
 		return -1;
 	}

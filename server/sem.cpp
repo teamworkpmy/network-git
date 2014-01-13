@@ -18,7 +18,7 @@ void CSem::Post()
 int CSem::Wait(time_t sec, long nsec)
 {
 	if (sec < 0 || nsec < 0) {
-		DOLOG("[ERROR]%s(%d): param error, sec: %lu, nsec: %lu", __FUNCTION__, __LINE__, sec, nsec);
+		LOG("[ERROR]%s(%d): param error, sec: %lu, nsec: %lu", __FUNCTION__, __LINE__, sec, nsec);
 		return -1;
 	}
 
@@ -32,7 +32,7 @@ int CSem::Wait(time_t sec, long nsec)
 
 		if (sem_timedwait(&m_sem, &timeout) != 0) {
 			if (errno != ETIMEDOUT) { 
-				DOLOG("[ERROR]%s(%d): timewait failed, sec: %lu, nsec: %lu, error: %s", 
+				LOG("[ERROR]%s(%d): timewait failed, sec: %lu, nsec: %lu, error: %s", 
 						__FUNCTION__, __LINE__, sec, nsec, strerror(errno));
 			}
 			return -1;

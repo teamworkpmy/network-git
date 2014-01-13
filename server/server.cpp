@@ -18,7 +18,7 @@ void* thr_fn(void *p)
 {
 	CPro *pPro = (CPro *)p;
 	if (!pPro) {
-		DOLOG("[ERROR]%s(%d): pPor is a null ptr", __FUNCTION__, __LINE__);
+		LOG("[ERROR]%s(%d): pPor is a null ptr", __FUNCTION__, __LINE__);
 		return 0;
 	}
 
@@ -34,7 +34,7 @@ int CServer::Init()
 
 	m_pPro = new CPro[m_hdThreadNum]; 
 	if (!m_pPro) {
-		DOLOG("[ERROR]%s(%d): can't allocate for m_pPro", __FUNCTION__, __LINE__);
+		LOG("[ERROR]%s(%d): can't allocate for m_pPro", __FUNCTION__, __LINE__);
 		return -1;
 	}
 
@@ -48,7 +48,7 @@ int CServer::Init()
 		m_pPro[i].Init(this, i);
 
 		if (pthread_create(&thread[i], NULL, thr_fn, &m_pPro[i]) != 0) {
-			DOLOG("[ERROR]%s(%d): pthread_create error, n: %d", __FUNCTION__, __LINE__, i);
+			LOG("[ERROR]%s(%d): pthread_create error, n: %d", __FUNCTION__, __LINE__, i);
 			return -1;
 		}
 
@@ -71,12 +71,13 @@ u_short CServer::GetThread()
 
 int CServer::OnReadData(CClient *pClient) 
 {
-	//DOLOG("%s: len: %d", __FUNCTION__, pClient->GetDataSize());
+	struct sockaddr_in addr = pClient->m_addr;
+	//LOG("%s: len: %d, IP %s:%hd", __FUNCTION__, pClient->GetDataSize(), inet_ntoa(addr.sin_addr), addr.sin_port);
 
 	u_short hdThread = GetThread();
 
 	if (hdThread >= m_hdThreadNum) {
-		DOLOG("[ERROR]%s(%d): thread: %d error", __FUNCTION__, __LINE__, hdThread);
+		LOG("[ERROR]%s(%d): thread: %d error", __FUNCTION__, __LINE__, hdThread);
 		return -1;
 	}
 

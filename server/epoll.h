@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include "log.h"
 #include "client.h"
+#include "dynpool.h"
 
 class CEpoll 
 {
@@ -29,14 +30,17 @@ class CEpoll
 		int EpollWait(struct epoll_event *events, int maxevents, int timeout);
 		int EpollDel(struct epoll_event *event);
 
+		void DealData(); 
+
 	private:
 		struct sockaddr_in m_svraddr;
 		struct sockaddr_in m_cltaddr;
 		uint32_t m_cltaddr_len;
 		int m_sockfd;
-
 		int m_epollfd;
+		int m_uRecvLen;
 
 	private:
 		CClient *m_pClient;
+		CDynPool<CClient, int> m_MemPool;
 };

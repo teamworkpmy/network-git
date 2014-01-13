@@ -16,6 +16,8 @@ class CPro
 	private:
 		CQueue *m_pQueue;
 		u_char *m_pData;
+		CServer *m_pServer;
+		u_short m_hdThreadNum;
 
 	public:
 		CSem m_sem;

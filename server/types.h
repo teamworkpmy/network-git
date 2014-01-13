@@ -23,6 +23,10 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <pthread.h>
+#include <netinet/in.h>
+#include <map>
+#include <set>
+using namespace std;
 
 #define u_char unsigned char
 #define u_int unsigned int

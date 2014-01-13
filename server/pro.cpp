@@ -21,7 +21,7 @@ CPro::~CPro()
 int CPro::PushData(u_char *pData, u_int uDataLen)
 {
 	if (!pData || uDataLen < 1) {
-		DOLOG("[ERROR]%s(%d): DATA ERROR, len: %d", __FUNCTION__, __LINE__, uDataLen);
+		LOG("[ERROR]%s(%d): DATA ERROR, len: %d", __FUNCTION__, __LINE__, uDataLen);
 		return -1;
 	}
 
@@ -34,21 +34,29 @@ int CPro::Init(CServer *pServer, u_short hdThread)
 {
 	m_pQueue = new CQueue; 
 	if (!m_pQueue) {
-		DOLOG("[ERROR]%s(%d): can't allocate for m_pQueue", __FUNCTION__, __LINE__);
+		LOG("[ERROR]%s(%d): can't allocate for m_pQueue", __FUNCTION__, __LINE__);
 		return -1;
 	}
 
 	if (!m_pQueue->Alloc()) {
-		DOLOG("[ERROR]%s(%d): can't init for m_pQueue", __FUNCTION__, __LINE__);
+		LOG("[ERROR]%s(%d): can't init for m_pQueue", __FUNCTION__, __LINE__);
 		return -1;
 	}
 
 	m_pData = new u_char[10240];
 	if (!m_pData) {
-		DOLOG("[ERROR]%s(%d): can't allocate for m_pData", __FUNCTION__, __LINE__);
+		LOG("[ERROR]%s(%d): can't allocate for m_pData", __FUNCTION__, __LINE__);
 		return -1;
 	}
 
+	if (!pServer) {
+		LOG("[ERROR]%s(%d): pServer is a null ptr", __FUNCTION__, __LINE__);
+		return -1;
+	}
+
+	m_pServer = pServer;
+
+	m_hdThreadNum = hdThread;
 
 	return 0;
 }
@@ -66,25 +74,25 @@ int CPro::Loop()
 			memset(buf, 0, 10240);
 			uLen = m_pQueue->Peek(pData, 4);
 			if (uLen != 4) {
-				//DOLOG("[ERROR]%s(%d): PEEK ERROR, len: %u", __FUNCTION__, __LINE__, uLen);
+				//LOG("[ERROR]%s(%d): PEEK ERROR, len: %u", __FUNCTION__, __LINE__, uLen);
 				continue;
 			}
 
 			uLen = *(u_int *)pData;
 			if (uLen < 1 || uLen > 4294967294) {
-				DOLOG("[ERROR]%s(%d): DATALEN ERROR, len: %u", __FUNCTION__, __LINE__, uLen);
+				LOG("[ERROR]%s(%d): DATALEN ERROR, len: %u", __FUNCTION__, __LINE__, uLen);
 				continue;
 			}
 
 			uDataLen = m_pQueue->Pop(pData, uLen);
 			if (uDataLen != uLen) {
-				DOLOG("[ERROR]%s(%d): POP ERROR, len: %u, data: %d", __FUNCTION__, __LINE__, uLen, uDataLen);
+				LOG("[ERROR]%s(%d): POP ERROR, len: %u, data: %d", __FUNCTION__, __LINE__, uLen, uDataLen);
 				continue;
 			}
 
 			tagData *p = (tagData *)pData;
 			memcpy(buf, p->pData, p->iSize);
-			DOLOG("[INFO]%s: RECV, len: %u, data: %s", __FUNCTION__, p->iSize, buf);
+			LOG("[INFO]%s: RECV, len: %u, data: %s", __FUNCTION__, p->iSize, buf);
 		}
 	}
 	return 0;

@@ -2,13 +2,18 @@
 
 CMyLog::CMyLog() : 
 	m_buf(0), 
-	m_buflen(0), 
+	m_pBufLen(0), 
 	m_timebuf(0), 
 	m_timelen(0),
 	m_uMaxLogSize(0),
 	m_pLogData(NULL)
 {
-
+	time_t tTimeNow = time(NULL);
+	struct tm *timeinfo = localtime(&tTimeNow);
+	char tmp[256] = {0};
+	snprintf(tmp, 256, "./log/pmy_%04d_%02d_%02d.log",
+			timeinfo->tm_year + 1900, timeinfo->tm_mon + 1, timeinfo->tm_mday);
+	g_Log.LogInit(tmp);
 }
 
 CMyLog::~CMyLog()
@@ -29,10 +34,10 @@ CMyLog::~CMyLog()
 int CMyLog::LogInit(const char *szFileName)
 {
 	m_timelen = 128;
-	m_buflen = 512;
+	m_pBufLen = 1024 * 1024 + 1;
 	m_uMaxLogSize = 1024 * 1024;
 
-	m_buf = (char *)new char[m_buflen];
+	m_buf = (char *)new char[m_pBufLen];
 	if (!m_buf) {
 		printf("[ERROR]%s: CAN'T ALLOCATE FOR m_buf", __FUNCTION__);
 		return -1;
@@ -71,6 +76,7 @@ int CMyLog::LogAppend(const char *fmt,...)
 {
 	int ret;   
 
+	memset(m_buf, 0, m_pBufLen);
 	tTimeNow = time(NULL);
 	localtime_r(&tTimeNow, &timeinfo);
 	localtime_r(&m_pLogData->tLastTime, &LastLogInfo);
@@ -89,7 +95,7 @@ int CMyLog::LogAppend(const char *fmt,...)
 		memcpy(m_pLogData->szLogPath, m_buf, ret);
 		memset(m_pLogData->szOldPath, 0, 256);
 		memcpy(m_pLogData->szOldPath, m_buf, ret);
-		memset(m_buf, 0, 512);
+		memset(m_buf, 0, m_pBufLen);
 
 		m_pLogData->uLogSize = 0;
 		m_pLogData->hdCount = 1;
@@ -130,6 +136,7 @@ int CMyLog::LogAppend(const char *fmt,...)
 	vfprintf(m_pLogData->fp, m_buf, ap2);
 	fflush(m_pLogData->fp);
 	va_end(ap2);   
+	va_end(ap1);
 
 	return 0;
 }
