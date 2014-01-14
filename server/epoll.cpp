@@ -345,6 +345,7 @@ int CEpoll::Loop()
 
 							m_pClient->m_uExceptLen = *(u_int *)(m_pClient->m_pRecvData + m_pClient->m_uExceptLen);
 							memmove(m_pClient->m_pRecvData, m_pClient->m_pRecvData + m_pClient->m_uRecvedLen, m_pClient->m_uRemainLen);
+							m_pClient->m_uRecvedLen = m_pClient->m_uRemainLen;
 							//LOG("except: %d, remain: %d", m_pClient->m_uExceptLen, m_pClient->m_uRecvedLen);
 						} while(m_pClient->m_uRemainLen >= m_pClient->m_uExceptLen);
 					}
